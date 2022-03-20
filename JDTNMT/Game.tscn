@@ -1,0 +1,127 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://icon.png" type="Texture" id=1]
+[ext_resource path="res://PlayerManager.gd" type="Script" id=2]
+[ext_resource path="res://CameraManager.gd" type="Script" id=3]
+[ext_resource path="res://EnemyManager.gd" type="Script" id=4]
+
+[sub_resource type="PlaneMesh" id=1]
+
+[sub_resource type="BoxShape" id=2]
+extents = Vector3( 0.1, 0.1, 0.1 )
+
+[sub_resource type="BoxShape" id=4]
+extents = Vector3( 0.6, 0.3, 0.01 )
+
+[sub_resource type="BoxShape" id=3]
+extents = Vector3( 2.27239, 0.01, 1.54254 )
+
+[sub_resource type="GDScript" id=5]
+script/source = "extends Spatial
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = \"text\"
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+"
+
+[node name="Game" type="Node"]
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 2.22108, 0, 0, 0, 1, 0, 0, 0, 1.54562, 0, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance4" type="MeshInstance" parent="."]
+transform = Transform( -5.2108e-15, -4.37114e-08, -1, -1, 1.19209e-07, 0, 1.19209e-07, 1, -4.37114e-08, 1.19209e-07, 1, -1 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.915908, 0.401388, 0, -0.401388, 0.915908, 0, 2.59577, 4.68321 )
+projection = 1
+script = ExtResource( 3 )
+
+[node name="Tween" type="Tween" parent="Camera"]
+
+[node name="Player" type="KinematicBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.494798, 0.871885, 0 )
+script = ExtResource( 2 )
+
+[node name="Groundbox" type="CollisionShape" parent="Player"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
+shape = SubResource( 2 )
+
+[node name="Sprite3D" type="Sprite3D" parent="Player"]
+transform = Transform( 0.477656, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.325976, 0 )
+billboard = 2
+texture = ExtResource( 1 )
+
+[node name="LeftNotifler" type="VisibilityNotifier" parent="Player"]
+aabb = AABB( -0.347461, 0.138, -0.022, 0.025, 0.5, 0.1 )
+
+[node name="RightNOtifler" type="VisibilityNotifier" parent="Player"]
+aabb = AABB( 0.939893, 0.138, -0.022, 0.025, 0.5, 0.1 )
+
+[node name="Enemy" type="KinematicBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.27614, 0.871885, 0 )
+script = ExtResource( 4 )
+
+[node name="Groundbox" type="CollisionShape" parent="Enemy"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
+shape = SubResource( 2 )
+
+[node name="Sprite3D" type="Sprite3D" parent="Enemy"]
+transform = Transform( 0.477656, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.325976, 0 )
+modulate = Color( 1, 0, 0, 1 )
+billboard = 2
+texture = ExtResource( 1 )
+
+[node name="LeftNotifler" type="VisibilityNotifier" parent="Enemy"]
+aabb = AABB( -0.176371, 0.138184, -0.022, 0.0246167, 0.5, 0.1 )
+
+[node name="RightNOtifler" type="VisibilityNotifier" parent="Enemy"]
+aabb = AABB( 0.151266, 0.138184, -0.022, 0.0246167, 0.5, 0.1 )
+
+[node name="Detectbox" type="Area" parent="Enemy"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Enemy/Detectbox"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0 )
+shape = SubResource( 4 )
+
+[node name="StaticBody" type="StaticBody" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+shape = SubResource( 3 )
+
+[node name="StaticBody2" type="StaticBody" parent="."]
+transform = Transform( -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, -1.13641, 1.14415, 0.565178 )
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody2"]
+shape = SubResource( 3 )
+
+[node name="StaticBody3" type="StaticBody" parent="."]
+transform = Transform( -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 1.10497, 1.14415, 0.565178 )
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody3"]
+shape = SubResource( 3 )
+
+[node name="TurnManager" type="Spatial" parent="."]
+script = SubResource( 5 )
+
+[connection signal="screen_entered" from="Player/LeftNotifler" to="Camera" method="_on_Player_LeftNotifler_screen_entered"]
+[connection signal="screen_exited" from="Player/LeftNotifler" to="Camera" method="_on_Player_LeftNotifler_screen_exited"]
+[connection signal="screen_entered" from="Player/RightNOtifler" to="Camera" method="_on_Player_RightNOtifler_screen_entered"]
+[connection signal="screen_exited" from="Player/RightNOtifler" to="Camera" method="_on_Player_RightNOtifler_screen_exited"]
+[connection signal="body_entered" from="Enemy/Detectbox" to="Enemy" method="_on_Detectbox_body_entered"]
+[connection signal="body_exited" from="Enemy/Detectbox" to="Enemy" method="_on_Detectbox_body_exited"]
