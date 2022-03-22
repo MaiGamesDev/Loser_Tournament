@@ -19,5 +19,6 @@ func get_input(delta):
 	if Input.is_action_pressed("move_left"):
 		vx = -1
 	velocity.x = vx * speed * delta
-
-
+	
+func jab():
+	
