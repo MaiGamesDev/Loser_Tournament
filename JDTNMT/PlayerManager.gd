@@ -20,5 +20,5 @@ func get_input(delta):
 		vx = -1
 	velocity.x = vx * speed * delta
 	
-func jab():
+func left_jab():
 	
