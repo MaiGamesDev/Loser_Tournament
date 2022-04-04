@@ -4,13 +4,13 @@ var gravity =  1 * Vector3.DOWN
 var speed = 30
 var velocity = Vector3.ZERO
 
+signal player_died
 
 func _physics_process(delta):
 	get_input(delta)
 	velocity += gravity * delta
 	move_and_slide(velocity)
 	
-
 func get_input(delta):
 	var vx = 0
 	
@@ -21,4 +21,7 @@ func get_input(delta):
 	velocity.x = vx * speed * delta
 	
 func left_jab():
+	pass
 	
+func die():
+	emit_signal("player_died")

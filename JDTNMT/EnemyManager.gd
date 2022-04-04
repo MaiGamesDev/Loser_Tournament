@@ -1,5 +1,7 @@
 extends KinematicBody
 
+signal enemy_died
+
 var gravity =  1 * Vector3.DOWN
 var speed = 30
 var velocity = Vector3.ZERO
@@ -20,7 +22,9 @@ func get_velocity_vx(delta):
 		vx = -1
 	velocity.x = vx * speed * delta
 
-
+func die():
+	emit_signal("enemy_died")
+	queue_free()
 
 func _on_Detectbox_body_entered(body):
 	if body.name == "Player":
@@ -29,3 +33,7 @@ func _on_Detectbox_body_entered(body):
 func _on_Detectbox_body_exited(body):
 	if body.name == "Player":
 		move_state = "stop"
+
+func _on_HurtHit_area_entered(area):
+	if area.name == "PlayerAttackHit":
+		die()
