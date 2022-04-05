@@ -1,28 +1,84 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://icon.png" type="Texture" id=1]
-[ext_resource path="res://PlayerManager.gd" type="Script" id=2]
-[ext_resource path="res://CameraManager.gd" type="Script" id=3]
-[ext_resource path="res://EnemyManager.gd" type="Script" id=4]
-[ext_resource path="res://in_progress/plaeyr.png" type="Texture" id=5]
-[ext_resource path="res://in_progress/punch.png" type="Texture" id=6]
-[ext_resource path="res://neodgm.ttf" type="DynamicFontData" id=7]
-[ext_resource path="res://UI.gd" type="Script" id=8]
+[ext_resource path="res://player.png" type="Texture" id=2]
+[ext_resource path="res://in_progress/punch.png" type="Texture" id=3]
+[ext_resource path="res://Source/EnemyManager.gd" type="Script" id=4]
+[ext_resource path="res://Source/CameraManager.gd" type="Script" id=5]
+[ext_resource path="res://Source/UI.gd" type="Script" id=6]
+[ext_resource path="res://Source/PlayerManager.gd" type="Script" id=7]
+[ext_resource path="res://neodgm.ttf" type="DynamicFontData" id=8]
 
 [sub_resource type="PlaneMesh" id=1]
 
 [sub_resource type="BoxShape" id=2]
-extents = Vector3( 0.1, 0.2, 0.1 )
+extents = Vector3( 0.07, 0.19, 0.1 )
 
 [sub_resource type="BoxShape" id=8]
-extents = Vector3( 0.204, 0.069, 0.1 )
+extents = Vector3( 0.08, 0.04, 0.1 )
+
+[sub_resource type="BoxShape" id=12]
+extents = Vector3( 0.05, 0.06, 0.1 )
+
+[sub_resource type="AnimationNodeAnimation" id=14]
+animation = "idle"
+
+[sub_resource type="AnimationNodeAnimation" id=15]
+animation = "left_jab"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=16]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=17]
+switch_mode = 2
+auto_advance = true
 
 [sub_resource type="AnimationNodeStateMachine" id=9]
+states/idle/node = SubResource( 14 )
+states/idle/position = Vector2( 209, 60 )
+states/left_jab/node = SubResource( 15 )
+states/left_jab/position = Vector2( 385, 60 )
+transitions = [ "idle", "left_jab", SubResource( 16 ), "left_jab", "idle", SubResource( 17 ) ]
+start_node = "idle"
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=10]
 
 [sub_resource type="Animation" id=11]
 resource_name = "idle"
+tracks/0/type = "method"
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "go_idle"
+} ]
+}
+
+[sub_resource type="Animation" id=13]
+resource_name = "left_jab"
+length = 0.3
+tracks/0/type = "method"
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"values": [ {
+"args": [  ],
+"method": "enable_PlayerAttackHit"
+}, {
+"args": [  ],
+"method": "disable_PlayerAttackHit"
+} ]
+}
 
 [sub_resource type="BoxShape" id=6]
 extents = Vector3( 0.1, 0.2, 0.1 )
@@ -54,7 +110,11 @@ func _ready():
 
 [sub_resource type="DynamicFont" id=7]
 size = 32
-font_data = ExtResource( 7 )
+font_data = ExtResource( 8 )
+
+[sub_resource type="DynamicFont" id=18]
+size = 64
+font_data = ExtResource( 8 )
 
 [node name="Game" type="Node"]
 
@@ -71,25 +131,22 @@ material/0 = null
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.915908, 0.401388, 0, -0.401388, 0.915908, 0, 2.59861, 4.80915 )
 projection = 1
-script = ExtResource( 3 )
+script = ExtResource( 5 )
 
 [node name="Tween" type="Tween" parent="Camera"]
 
 [node name="Player" type="KinematicBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.494798, 0.871885, 0 )
-script = ExtResource( 2 )
+script = ExtResource( 7 )
 
 [node name="PlayerGround" type="CollisionShape" parent="Player"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02, 0.2, 0 )
 shape = SubResource( 2 )
 
 [node name="Sprite3D" type="Sprite3D" parent="Player"]
+offset = Vector2( 0, 30 )
 billboard = 2
-texture = ExtResource( 5 )
-
-[node name="Sprite3D2" type="Sprite3D" parent="Player/Sprite3D"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.01 )
-billboard = 2
-texture = ExtResource( 6 )
+texture = ExtResource( 2 )
 
 [node name="LeftNotifler" type="VisibilityNotifier" parent="Player"]
 aabb = AABB( -0.35, -0.2, 0, 0.025, 0.4, 0.1 )
@@ -98,19 +155,31 @@ aabb = AABB( -0.35, -0.2, 0, 0.025, 0.4, 0.1 )
 aabb = AABB( 1, -0.2, 0, 0.025, 0.4, 0.1 )
 
 [node name="PlayerAttackHit" type="Area" parent="Player"]
+monitorable = false
 
 [node name="CollisionShape" type="CollisionShape" parent="Player/PlayerAttackHit"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0990875, 0.062934, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0478983, 0.292934, 0 )
 shape = SubResource( 8 )
+
+[node name="CollisionShape2" type="CollisionShape" parent="Player/PlayerAttackHit/CollisionShape"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0999997, -1.19209e-07, 0 )
+shape = SubResource( 12 )
+
+[node name="Sprite3D" type="Sprite3D" parent="Player/PlayerAttackHit/CollisionShape"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02, -0.07, 0.1 )
+billboard = 2
+texture = ExtResource( 3 )
 
 [node name="PlayerAnimTree" type="AnimationTree" parent="Player"]
 tree_root = SubResource( 9 )
 anim_player = NodePath("PlayerAnim")
+active = true
 parameters/playback = SubResource( 10 )
 
 [node name="PlayerAnim" type="AnimationPlayer" parent="Player/PlayerAnimTree"]
 root_node = NodePath("../..")
 anims/idle = SubResource( 11 )
+anims/left_jab = SubResource( 13 )
 
 [node name="Enemy" type="KinematicBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.27614, 0.871885, 0 )
@@ -167,7 +236,7 @@ script = SubResource( 5 )
 [node name="UI" type="Control" parent="UILayer"]
 margin_right = 40.0
 margin_bottom = 40.0
-script = ExtResource( 8 )
+script = ExtResource( 6 )
 
 [node name="HBox" type="HBoxContainer" parent="UILayer/UI"]
 margin_left = 1.0
@@ -216,6 +285,21 @@ margin_bottom = 60.0
 rect_min_size = Vector2( 450, 60 )
 value = 100.0
 percent_visible = false
+
+[node name="InputState" type="Label" parent="UILayer/UI"]
+margin_left = 9.0
+margin_top = 519.0
+margin_right = 565.0
+margin_bottom = 583.0
+custom_fonts/font = SubResource( 18 )
+
+[node name="InputState2" type="Label" parent="UILayer/UI/InputState"]
+margin_top = -65.0
+margin_right = 556.0
+margin_bottom = -1.0
+rect_scale = Vector2( 0.8, 0.8 )
+custom_colors/font_color = Color( 1, 1, 1, 0.317647 )
+custom_fonts/font = SubResource( 18 )
 
 [connection signal="player_died" from="Player" to="UILayer/UI" method="_on_player_died"]
 [connection signal="screen_entered" from="Player/LeftNotifler" to="Camera" method="_on_Player_LeftNotifler_screen_entered"]
