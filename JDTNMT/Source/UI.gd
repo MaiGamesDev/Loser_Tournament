@@ -24,8 +24,8 @@ func get_actionname_from_scancode(scancode):
 	return ""
 				
 func _on_player_died():
-	$HBox/Control/Label2.text = str(int($HBox/Control/Label2.text) + 1)
+	$TopUI/Scoreboard/Score/EnemyScore.text = str(int($TopUI/Scoreboard/Score/EnemyScore.text) + 1)
 
 
 func _on_Enemy_died():
-	$HBox/Control/Label.text = str(int($HBox/Control/Label.text) + 1)
+	$TopUI/Scoreboard/Score/PlayerScore.text = str(int($TopUI/Scoreboard/Score/PlayerScore.text) + 1)
